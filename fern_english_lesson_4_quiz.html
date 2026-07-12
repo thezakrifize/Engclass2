@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fern English Quiz — Lesson 4</title>
+  <style>
+    :root{
+      --ink:#111111;
+      --paper:#f5f2ea;
+      --red:#e5332a;
+      --muted:#6f6b63;
+      --line:#cfc9bd;
+      --good:#167c4f;
+      --bad:#b42318;
+      --panel:#fffdf8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--paper);
+      color:var(--ink);
+      font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height:100vh;
+    }
+    .shell{max-width:1120px;margin:0 auto;padding:24px}
+    header{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:24px;
+      align-items:end;
+      border-top:12px solid var(--ink);
+      padding-top:18px;
+      margin-bottom:24px;
+    }
+    h1{font-size:clamp(30px,5vw,62px);line-height:.92;margin:0;letter-spacing:-.05em;max-width:760px}
+    .kicker{font-size:13px;text-transform:uppercase;letter-spacing:.16em;color:var(--red);font-weight:800;margin-bottom:8px}
+    .meta{text-align:right;font-size:14px;line-height:1.5;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
+    .sidebar,.card{background:var(--panel);border:2px solid var(--ink)}
+    .sidebar{padding:18px;position:sticky;top:16px;height:max-content}
+    .stat{border-bottom:1px solid var(--line);padding:14px 0}
+    .stat:last-child{border-bottom:0}
+    .label{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:800}
+    .value{font-size:30px;font-weight:900;letter-spacing:-.04em;margin-top:4px}
+    .timer-wrap{margin-top:8px}
+    .timer-track{height:10px;background:#ded8cc;overflow:hidden}
+    .timer-bar{height:100%;background:var(--red);width:100%;transition:width 1s linear}
+    .card{padding:clamp(20px,4vw,48px);min-height:600px;display:flex;flex-direction:column}
+    .question-no{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--red);font-weight:900}
+    .question{font-size:clamp(28px,4vw,48px);line-height:1.08;letter-spacing:-.035em;margin:18px 0 28px;max-width:850px}
+    .hint{font-size:15px;color:var(--muted);margin-top:-14px;margin-bottom:24px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    button.answer{
+      text-align:left;
+      border:2px solid var(--ink);
+      background:transparent;
+      padding:18px;
+      min-height:74px;
+      font:inherit;
+      font-size:18px;
+      font-weight:750;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    button.answer:hover:not(:disabled){background:var(--ink);color:white;transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--red)}
+    button.answer:disabled{cursor:default}
+    button.answer.correct{background:#dff4e9;border-color:var(--good);color:#0d5b39}
+    button.answer.wrong{background:#fde7e4;border-color:var(--bad);color:#7a1a12}
+    .explanation{display:none;margin-top:26px;border-top:3px solid var(--ink);padding-top:20px}
+    .explanation.show{display:block}
+    .result-tag{display:inline-block;padding:6px 10px;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+    .result-tag.good{background:var(--good);color:white}
+    .result-tag.bad{background:var(--bad);color:white}
+    .explanation h3{margin:0 0 8px;font-size:24px}
+    .explanation p{font-size:17px;line-height:1.7;margin:8px 0;color:#2b2925}
+    .controls{margin-top:auto;padding-top:28px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .next,.restart{
+      border:0;background:var(--red);color:white;padding:15px 22px;font-weight:900;font-size:16px;cursor:pointer;
+    }
+    .next:disabled{background:#aaa59d;cursor:not-allowed}
+    .small{font-size:13px;color:var(--muted)}
+    .intro,.final{padding:18px 0}
+    .intro ul{line-height:1.8;color:#333}
+    .start{border:0;background:var(--ink);color:white;padding:18px 24px;font-size:18px;font-weight:900;cursor:pointer;margin-top:18px}
+    .final-score{font-size:clamp(64px,12vw,140px);line-height:.9;font-weight:950;letter-spacing:-.08em;color:var(--red);margin:24px 0}
+    .breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}
+    .box{border:2px solid var(--ink);padding:16px;background:#fff}
+    @media(max-width:800px){
+      .grid{grid-template-columns:1fr}
+      .sidebar{position:static;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+      .stat{border-bottom:0;border-right:1px solid var(--line);padding:8px}
+      .stat:last-child{border-right:0}
+      .value{font-size:22px}
+      .answers{grid-template-columns:1fr}
+      header{grid-template-columns:1fr}.meta{text-align:left}
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div>
+      <div class="kicker">Stage 1 · Lesson 4</div>
+      <h1>What Is It?<br>40-Question Quiz</h1>
+    </div>
+    <div class="meta">Fern<br>60 seconds / question<br>คำอธิบายภาษาไทยหลังตอบ</div>
+  </header>
+
+  <div class="grid">
+    <aside class="sidebar">
+      <div class="stat"><div class="label">Question</div><div class="value" id="qStat">—</div></div>
+      <div class="stat"><div class="label">Score</div><div class="value" id="scoreStat">0</div></div>
+      <div class="stat"><div class="label">Time</div><div class="value"><span id="timeStat">60</span>s</div><div class="timer-wrap"><div class="timer-track"><div class="timer-bar" id="timerBar"></div></div></div></div>
+      <div class="stat"><div class="label">Progress</div><div class="value" id="progressStat">0%</div></div>
+    </aside>
+
+    <main class="card" id="mainCard"></main>
+  </div>
+</div>
+
+<script>
+const questions = [
+{q:"What แปลว่าอะไร", a:["ใคร","อะไร","ที่ไหน","เมื่อไร"], c:1, e:"What แปลว่า ‘อะไร’ ใช้ถามเกี่ยวกับสิ่งของหรือข้อมูล เช่น What is this?"},
+{q:"เลือกคำแปลที่ถูกต้อง: What is this?", a:["นี่คืออะไร?","นั่นคืออะไร?","สิ่งเหล่านี้คืออะไร?","นี่คือหนังสือหรือไม่?"], c:0, e:"What is this? ใช้ถามถึงสิ่งของ 1 ชิ้นที่อยู่ใกล้ แปลว่า ‘นี่คืออะไร?’"},
+{q:"เลือกคำแปลที่ถูกต้อง: What is that?", a:["นี่คืออะไร?","นั่นคืออะไร?","สิ่งเหล่านี้คืออะไร?","สิ่งเหล่านั้นคืออะไร?"], c:1, e:"That ใช้กับสิ่งของ 1 ชิ้นที่อยู่ไกล จึงแปลว่า ‘นั่นคืออะไร?’"},
+{q:"เลือกคำแปลที่ถูกต้อง: What are these?", a:["นี่คืออะไร?","นั่นคืออะไร?","สิ่งเหล่านี้คืออะไร?","สิ่งเหล่านั้นคืออะไร?"], c:2, e:"These หมายถึงหลายสิ่งที่อยู่ใกล้ จึงใช้ are และแปลว่า ‘สิ่งเหล่านี้คืออะไร?’"},
+{q:"เลือกคำแปลที่ถูกต้อง: What are those?", a:["สิ่งเหล่านั้นคืออะไร?","สิ่งเหล่านี้คืออะไร?","นั่นคืออะไร?","นี่คืออะไร?"], c:0, e:"Those หมายถึงหลายสิ่งที่อยู่ไกล จึงแปลว่า ‘สิ่งเหล่านั้นคืออะไร?’"},
+
+{q:"เติมคำ: What ___ this?", a:["am","is","are","be"], c:1, e:"This เป็นเอกพจน์ จึงใช้ is: What is this?"},
+{q:"เติมคำ: What ___ that?", a:["is","are","am","do"], c:0, e:"That เป็นเอกพจน์ จึงใช้ is: What is that?"},
+{q:"เติมคำ: What ___ these?", a:["is","am","are","be"], c:2, e:"These เป็นพหูพจน์ จึงใช้ are: What are these?"},
+{q:"เติมคำ: What ___ those?", a:["is","are","am","does"], c:1, e:"Those เป็นพหูพจน์ จึงใช้ are: What are those?"},
+{q:"ข้อใดเป็นคำถามที่ถูกต้อง", a:["What this is?","What is this?","What are this?","Is what this?"], c:1, e:"โครงสร้างที่ถูกคือ What + is + this: What is this?"},
+
+{q:"ตอบคำถาม: What is this? (เป็นหนังสือ)", a:["It's a book.","They're books.","It are a book.","This are books."], c:0, e:"สิ่งของ 1 ชิ้นใช้ it และ is จึงตอบว่า It’s a book."},
+{q:"ตอบคำถาม: What is that? (เป็นรถ)", a:["Those are cars.","It's a car.","They're a car.","That are car."], c:1, e:"สิ่งของ 1 ชิ้นใช้ It’s a car. ซึ่งเป็นคำตอบที่ธรรมชาติที่สุด"},
+{q:"ตอบคำถาม: What are these? (เป็นหนังสือหลายเล่ม)", a:["It's a book.","These is books.","These are books.","This are books."], c:2, e:"These เป็นพหูพจน์ จึงใช้ are และ books ต้องเติม -s"},
+{q:"ตอบคำถาม: What are those? (เป็นรถหลายคัน)", a:["Those are cars.","That is cars.","Those is a car.","It is cars."], c:0, e:"Those ใช้กับหลายสิ่งที่อยู่ไกล จึงตอบ Those are cars."},
+{q:"คำตอบใดเป็นธรรมชาติที่สุดสำหรับ What is this?", a:["This is my book.","It's a book.","They are books.","Yes, it is."], c:1, e:"เมื่อถามว่าสิ่งนี้คืออะไร คำตอบที่กระชับและธรรมชาติคือ It’s a book."},
+
+{q:"It's ย่อมาจากอะไร", a:["It are","It am","It is","It has not"], c:2, e:"It’s ในบทเรียนนี้ย่อมาจาก It is"},
+{q:"They're ย่อมาจากอะไร", a:["They is","They are","They am","Their are"], c:1, e:"They’re ย่อมาจาก They are"},
+{q:"I'm ย่อมาจากอะไร", a:["I is","I are","I am","My am"], c:2, e:"I’m ย่อมาจาก I am"},
+{q:"She's ย่อมาจากอะไร", a:["She is","She are","She am","Her is"], c:0, e:"She’s ย่อมาจาก She is"},
+{q:"ข้อใดเขียนรูปย่อถูกต้อง", a:["Its a car.","It's a car.","Its' a car.","It,s a car."], c:1, e:"รูปย่อ It is ต้องมี apostrophe: It’s"},
+
+{q:"เลือกคำแปลที่ถูกต้อง: It's a book.", a:["พวกเขาเป็นหนังสือ","นี่/นั่นคือหนังสือ","นี่คือหนังสือหลายเล่ม","มันไม่ใช่หนังสือ"], c:1, e:"It’s a book. หมายถึง ‘นี่/นั่นคือหนังสือ’ ตามบริบท"},
+{q:"เลือกคำแปลที่ถูกต้อง: They're teachers.", a:["เขาเป็นครู","พวกเขาเป็นครู","พวกเราเป็นครู","ครูเหล่านั้นอยู่ไกล"], c:1, e:"They’re = They are แปลว่า ‘พวกเขาเป็นครู’"},
+{q:"เลือกคำแปลที่ถูกต้อง: I'm Fern.", a:["ฉันชื่อเฟิร์น","เธอชื่อเฟิร์น","พวกเขาชื่อเฟิร์น","เฟิร์นเป็นของฉัน"], c:0, e:"I’m Fern. ใช้แนะนำตัว แปลว่า ‘ฉันชื่อเฟิร์น’"},
+{q:"เติมคำ: ___ a car.", a:["They're","It's","I'm","She's are"], c:1, e:"รถ 1 คันใช้ it จึงเป็น It’s a car."},
+{q:"เติมคำ: ___ teachers.", a:["It's","They're","I'm","That is"], c:1, e:"teachers เป็นหลายคน จึงใช้ They’re teachers."},
+
+{q:"ตอบคำถาม: Is this your phone? (ตอบว่าไม่)", a:["No, it is.","No, it isn't.","No, they aren't.","No, I am."], c:1, e:"คำถามเป็นเอกพจน์และตอบปฏิเสธ จึงใช้ No, it isn’t."},
+{q:"ตอบคำถาม: Are these your books? (ตอบว่าใช่)", a:["Yes, it is.","Yes, they are.","Yes, I am.","Yes, these is."], c:1, e:"These/books เป็นพหูพจน์ จึงแทนด้วย they: Yes, they are."},
+{q:"ตอบคำถาม: Is he a teacher? (ตอบว่าใช่)", a:["Yes, he is.","Yes, he are.","Yes, it is.","Yes, I am."], c:0, e:"คำถามใช้ he + is จึงตอบ Yes, he is."},
+{q:"ตอบคำถาม: Are those your cars? (ตอบว่าไม่)", a:["No, it isn't.","No, they aren't.","No, those isn't.","No, I am not."], c:1, e:"Those/cars เป็นพหูพจน์ จึงตอบ No, they aren’t."},
+{q:"ข้อใดมีความหมายขัดแย้งกัน", a:["Yes, it is.","No, it isn't.","No, it is.","Yes, they are."], c:2, e:"No แปลว่าไม่ แต่ it is แปลว่าใช่ จึงขัดแย้งกัน ควรเป็น No, it isn’t."},
+
+{q:"เลือกประโยคที่ใช้ตัวพิมพ์ใหญ่ถูกต้อง", a:["Yes, He is.","Yes, he is.","yes, he is.","Yes, HE is."], c:1, e:"หลัง comma ยังเป็นประโยคเดียวกัน จึงใช้ he ตัวเล็ก: Yes, he is."},
+{q:"เลือกประโยคที่ใช้เครื่องหมายถูกต้อง", a:["What is this.","What is this?","What is this!","what is this?"], c:1, e:"ประโยคคำถามต้องลงท้ายด้วย ? และคำแรกต้องขึ้นต้นตัวใหญ่"},
+{q:"ข้อใดเขียนถูกต้องทุกจุด", a:["It's a book.","its a book.","It's a book?","It are a book."], c:0, e:"It’s a book. มีรูปย่อและเครื่องหมายจบประโยคถูกต้อง"},
+{q:"ข้อใดเขียนถูกต้องทุกจุด", a:["They're teachers.","Their teachers.","Theyre teachers.","They're teacher."], c:0, e:"They’re = They are และ teachers ต้องเป็นพหูพจน์"},
+{q:"ข้อใดเป็นประโยคคำถาม", a:["It's a car.","Those are cars.","What are those?","They're teachers."], c:2, e:"What are those? เป็นคำถามและลงท้ายด้วยเครื่องหมาย ?"},
+
+{q:"สถานการณ์: มีหนังสือ 1 เล่มอยู่ใกล้ ควรถามว่าอะไร", a:["What is this?","What is that?","What are these?","What are those?"], c:0, e:"1 สิ่งที่อยู่ใกล้ ใช้ this และ is: What is this?"},
+{q:"สถานการณ์: มีรถ 1 คันอยู่ไกล ควรถามว่าอะไร", a:["What is this?","What is that?","What are these?","What are those?"], c:1, e:"1 สิ่งที่อยู่ไกล ใช้ that และ is: What is that?"},
+{q:"สถานการณ์: มีหนังสือหลายเล่มอยู่ใกล้ ควรถามว่าอะไร", a:["What is this?","What is that?","What are these?","What are those?"], c:2, e:"หลายสิ่งที่อยู่ใกล้ ใช้ these และ are"},
+{q:"สถานการณ์: มีรถหลายคันอยู่ไกล ควรถามว่าอะไร", a:["What is this?","What is that?","What are these?","What are those?"], c:3, e:"หลายสิ่งที่อยู่ไกล ใช้ those และ are"},
+{q:"บทสนทนาใดถูกต้องและเป็นธรรมชาติที่สุด", a:["A: What is that? B: It's a car.","A: What are that? B: They're a car.","A: What is those? B: It are cars.","A: Is what that? B: Yes, car."], c:0, e:"What is that? ใช้ถาม 1 สิ่งที่อยู่ไกล และตอบธรรมชาติว่า It’s a car."}
+];
+
+let index = -1, score = 0, answered = false, timeLeft = 60, timer = null;
+const card = document.getElementById('mainCard');
+const qStat = document.getElementById('qStat');
+const scoreStat = document.getElementById('scoreStat');
+const timeStat = document.getElementById('timeStat');
+const progressStat = document.getElementById('progressStat');
+const timerBar = document.getElementById('timerBar');
+
+function intro(){
+  card.innerHTML = `<div class="intro">
+    <div class="question-no">Fern English Assessment</div>
+    <div class="question">แบบทดสอบ Lesson 4</div>
+    <ul>
+      <li>ทั้งหมด 40 ข้อ ข้อละ 4 ตัวเลือก</li>
+      <li>มีเวลา 60 วินาทีต่อข้อ</li>
+      <li>เมื่อเลือกคำตอบ ระบบจะแสดงเฉลยและคำอธิบายภาษาไทย</li>
+      <li>เมื่อหมดเวลา ระบบจะถือว่าข้อนั้นตอบผิดและแสดงคำอธิบาย</li>
+    </ul>
+    <button class="start" onclick="startQuiz()">เริ่มทำข้อสอบ</button>
+  </div>`;
+}
+
+function startQuiz(){index=0;score=0;renderQuestion();}
+
+function renderQuestion(){
+  clearInterval(timer); answered=false; timeLeft=60;
+  const item=questions[index];
+  qStat.textContent=`${index+1}/40`;
+  scoreStat.textContent=score;
+  progressStat.textContent=`${Math.round((index/40)*100)}%`;
+  timeStat.textContent=timeLeft;
+  timerBar.style.width='100%';
+  card.innerHTML=`
+    <div class="question-no">Question ${index+1} of 40</div>
+    <div class="question">${item.q}</div>
+    <div class="hint">เลือกคำตอบที่ถูกต้องที่สุด</div>
+    <div class="answers">
+      ${item.a.map((x,i)=>`<button class="answer" onclick="selectAnswer(${i})"><strong>${String.fromCharCode(65+i)}.</strong> ${x}</button>`).join('')}
+    </div>
+    <div class="explanation" id="exp"></div>
+    <div class="controls">
+      <div class="small">ตอบแล้วจึงไปข้อต่อไปได้</div>
+      <button class="next" id="nextBtn" onclick="nextQuestion()" disabled>${index===39?'ดูผลคะแนน':'ข้อต่อไป →'}</button>
+    </div>`;
+  timer=setInterval(()=>{
+    timeLeft--;
+    timeStat.textContent=timeLeft;
+    timerBar.style.width=`${(timeLeft/60)*100}%`;
+    if(timeLeft<=0){clearInterval(timer); timeoutAnswer();}
+  },1000);
+}
+
+function selectAnswer(choice){
+  if(answered) return;
+  answered=true; clearInterval(timer);
+  const item=questions[index];
+  const buttons=[...document.querySelectorAll('.answer')];
+  buttons.forEach(b=>b.disabled=true);
+  buttons[item.c].classList.add('correct');
+  const isCorrect=choice===item.c;
+  if(!isCorrect) buttons[choice].classList.add('wrong');
+  if(isCorrect){score++;scoreStat.textContent=score;}
+  showExplanation(isCorrect,item);
+}
+
+function timeoutAnswer(){
+  if(answered) return;
+  answered=true;
+  const item=questions[index];
+  const buttons=[...document.querySelectorAll('.answer')];
+  buttons.forEach(b=>b.disabled=true);
+  buttons[item.c].classList.add('correct');
+  const exp=document.getElementById('exp');
+  exp.classList.add('show');
+  exp.innerHTML=`<span class="result-tag bad">หมดเวลา</span><h3>คำตอบที่ถูก: ${item.a[item.c]}</h3><p>${item.e}</p>`;
+  document.getElementById('nextBtn').disabled=false;
+}
+
+function showExplanation(correct,item){
+  const exp=document.getElementById('exp');
+  exp.classList.add('show');
+  exp.innerHTML=`<span class="result-tag ${correct?'good':'bad'}">${correct?'ตอบถูก':'ตอบผิด'}</span><h3>คำตอบที่ถูก: ${item.a[item.c]}</h3><p>${item.e}</p>`;
+  document.getElementById('nextBtn').disabled=false;
+}
+
+function nextQuestion(){
+  if(index<39){index++;renderQuestion();}else{showFinal();}
+}
+
+function showFinal(){
+  clearInterval(timer);
+  const pct=Math.round((score/40)*100);
+  let level = pct>=90?'ยอดเยี่ยม — พร้อมเพิ่มความยาก':pct>=80?'ผ่านดี — พื้นฐานค่อนข้างแน่น':pct>=70?'ผ่าน — ควรทบทวนบางหัวข้อ':'ควรทบทวน Lesson 4 อีกครั้ง';
+  qStat.textContent='40/40'; progressStat.textContent='100%'; timeStat.textContent='—'; timerBar.style.width='0%';
+  card.innerHTML=`<div class="final">
+    <div class="question-no">Final Result</div>
+    <div class="question">ผลคะแนนของ Fern</div>
+    <div class="final-score">${score}/40</div>
+    <div class="breakdown">
+      <div class="box"><div class="label">Accuracy</div><div class="value">${pct}%</div></div>
+      <div class="box"><div class="label">Correct</div><div class="value">${score}</div></div>
+      <div class="box"><div class="label">Review</div><div class="value">${40-score}</div></div>
+    </div>
+    <h3>${level}</h3>
+    <p>เกณฑ์แนะนำ: หากได้ต่ำกว่า 80% ให้ทบทวน What is/are, this/that/these/those, คำย่อ และคำตอบสั้นก่อนเริ่ม Lesson 5</p>
+    <button class="restart" onclick="startQuiz()">ทำข้อสอบใหม่</button>
+  </div>`;
+}
+intro();
+</script>
+</body>
+</html>
